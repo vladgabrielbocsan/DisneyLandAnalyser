@@ -43,6 +43,7 @@ def handle_view_data(data, cols):
         sub = tui.view_data_menu()
 
         if sub == "A":
+            # B.7 View Reviews by Park
             parks = process.list_parks(data, cols)
             park = tui.ask_park(parks)
 
@@ -55,13 +56,21 @@ def handle_view_data(data, cols):
             date_col = cols["date"]
             loc_col = cols["location"]
 
-            # Print first 10 results
             for row in matches[:10]:
                 print("-" * 40)
                 print(f"Review ID: {row[id_col]}")
                 print(f"Rating: {row[rating_col]}")
                 print(f"Year_Month: {row[date_col]}")
                 print(f"Reviewer Location: {row[loc_col]}")
+
+        elif sub == "B":
+            # B.8 Number of Reviews by Park and Location
+            parks = process.list_parks(data, cols)
+            park = tui.ask_park(parks)
+            location = tui.ask_location()
+
+            count = process.count_by_park_and_location(data, cols, park, location)
+            print(f"\nNumber of reviews for {park} from {location}: {count}")
 
         elif sub == "X":
             break

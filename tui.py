@@ -8,6 +8,7 @@ def main_menu():
 def view_data_menu():
     print("\nView Data Menu")
     print("[A] View Reviews by Park")
+    print("[B] Number of Reviews by Park and Location")
     print("[X] Return to Main Menu")
     return input("Select an option: ").strip().upper()
 
@@ -17,3 +18,7 @@ def ask_park(parks):
     for p in parks:
         print(f"- {p}")
     return input("Type a park name exactly as shown: ").strip()
+
+
+def ask_location():
+    return input("Type a reviewer location (e.g., United Kingdom): ").strip()

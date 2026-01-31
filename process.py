@@ -43,3 +43,21 @@ def filter_by_park(data, cols, park_name):
         row for row in data
         if row[park_col].strip().lower() == wanted
     ]
+
+
+def count_by_park_and_location(data, cols, park_name, location_name):
+    park_col = cols["park"]
+    loc_col = cols["location"]
+
+    want_park = park_name.strip().lower()
+    want_loc = location_name.strip().lower()
+
+    count = 0
+    for row in data:
+        if (
+            row[park_col].strip().lower() == want_park
+            and row[loc_col].strip().lower() == want_loc
+        ):
+            count += 1
+
+    return count

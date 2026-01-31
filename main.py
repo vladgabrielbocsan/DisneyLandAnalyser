@@ -8,6 +8,7 @@ def main():
 
     data = process.load_reviews("Disneyland_reviews.csv")
     print(f"{len(data)} reviews loaded.")
+    print(data[0].keys())
 
     while True:
         choice = tui.main_menu()

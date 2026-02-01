@@ -1,92 +1,80 @@
 import csv
+from collections import defaultdict
 
 
 def load_reviews(filename):
     data = []
     with open(filename, newline="", encoding="utf-8") as file:
-        reader = csv.DictReader(file)
+        reader = csv.reader(file)
+        headers = next(reader)
+        cols = {h: i for i, h in enumerate(headers)}
+
         for row in reader:
             data.append(row)
-    return data
+
+    return data, cols
 
 
-def resolve_columns(sample_row):
-    keys = set(sample_row.keys())
-
-    def pick(options):
-        for opt in options:
-            if opt in keys:
-                return opt
-        return None
-
-    return {
-        "id": pick(["Review_ID", "ID"]),
-        "park": pick(["Branch", "Park", "Disneyland_Park"]),
-        "location": pick(["Reviewer_Location", "Location", "Country"]),
-        "rating": pick(["Rating", "Score"]),
-        "date": pick(["Year_Month", "Date"]),
-    }
-
-
-def list_parks(data, cols):
-    park_col = cols["park"]
+def get_parks(data, cols):
     parks = set()
     for row in data:
-        parks.add(row[park_col].strip())
+        parks.add(row[cols["Branch"]].strip())
     return sorted(parks)
 
 
-def filter_by_park(data, cols, park_name):
-    park_col = cols["park"]
-    wanted = park_name.strip().lower()
-    return [
-        row for row in data
-        if row[park_col].strip().lower() == wanted
-    ]
+def view_reviews_by_park(data, cols, park):
+    found = False
+    for row in data:
+        if row[cols["Branch"]].strip() == park:
+            print(row)
+            found = True
+    if not found:
+        print("No reviews found for that park.")
 
 
-def count_by_park_and_location(data, cols, park_name, location_name):
-    park_col = cols["park"]
-    loc_col = cols["location"]
-
-    want_park = park_name.strip().lower()
-    want_loc = location_name.strip().lower()
-
+def count_reviews_by_park_location(data, cols, park, location):
     count = 0
     for row in data:
-        if (
-            row[park_col].strip().lower() == want_park
-            and row[loc_col].strip().lower() == want_loc
-        ):
+        if row[cols["Branch"]].strip() == park and row[cols["Reviewer_Location"]].strip() == location:
             count += 1
-
     return count
 
-def average_rating_by_park_and_year(data, cols, park_name, year):
-    park_col = cols["park"]
-    rating_col = cols["rating"]
-    date_col = cols["date"]
 
-    want_park = park_name.strip().lower()
-    want_year = year.strip()
-
-    total = 0.0
-    count = 0
-
+def average_rating_by_park_year(data, cols, park, year):
+    ratings = []
     for row in data:
-        if row[park_col].strip().lower() != want_park:
+        if row[cols["Branch"]].strip() != park:
             continue
 
-        ym = row[date_col].strip()          # e.g. "2018-07"
-        row_year = ym[:4]                   # "2018"
+        ym = row[cols["Year_Month"]].strip()
+        if not ym.startswith(year):
+            continue
 
-        if row_year == want_year:
-            total += float(row[rating_col])
-            count += 1
+        try:
+            ratings.append(int(row[cols["Rating"]]))
+        except ValueError:
+            continue
 
-    if count == 0:
+    if not ratings:
         return None
+    return sum(ratings) / len(ratings)
 
-    return total / count
 
+def average_score_per_park_by_location(data, cols):
+    store = defaultdict(lambda: defaultdict(list))
 
+    for row in data:
+        park = row[cols["Branch"]].strip()
+        loc = row[cols["Reviewer_Location"]].strip()
+        try:
+            rating = int(row[cols["Rating"]])
+        except ValueError:
+            continue
+
+        store[park][loc].append(rating)
+
+    for park, locs in store.items():
+        print(f"\nPark: {park}")
+        for loc, ratings in locs.items():
+            avg = sum(ratings) / len(ratings)
+            print(f"  {loc}: {avg:.2f} (n={len(ratings)})")

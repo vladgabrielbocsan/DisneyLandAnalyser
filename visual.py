@@ -1,104 +1,89 @@
 import matplotlib.pyplot as plt
+from collections import defaultdict
 
 
 def pie_reviews_per_park(data, cols):
-    park_col = cols["park"]
-    counts = {}
+    counts = defaultdict(int)
 
     for row in data:
-        park = row[park_col].strip()
-        counts[park] = counts.get(park, 0) + 1
+        park = row[cols["Branch"]].strip()
+        counts[park] += 1
 
     labels = list(counts.keys())
     sizes = list(counts.values())
 
-    plt.figure()
     plt.pie(sizes, labels=labels, autopct="%1.1f%%")
     plt.title("Number of Reviews per Park")
     plt.show()
 
 
-def bar_top10_locations_by_avg_rating(data, cols, park_name):
-    park_col = cols["park"]
-    loc_col = cols["location"]
-    rating_col = cols["rating"]
-
-    want_park = park_name.strip().lower()
-
-    totals = {}   # location -> sum ratings
-    counts = {}   # location -> count
+def bar_top10_locations_avg(data, cols, park):
+    location_ratings = defaultdict(list)
 
     for row in data:
-        if row[park_col].strip().lower() != want_park:
+        if row[cols["Branch"]].strip() != park:
             continue
 
-        loc = row[loc_col].strip()
-        rating = float(row[rating_col])
+        try:
+            rating = int(row[cols["Rating"]])
+        except ValueError:
+            continue
 
-        totals[loc] = totals.get(loc, 0.0) + rating
-        counts[loc] = counts.get(loc, 0) + 1
+        location = row[cols["Reviewer_Location"]].strip()
+        location_ratings[location].append(rating)
 
-    avgs = []
-    for loc in totals:
-        avgs.append((loc, totals[loc] / counts[loc]))
+    averages = []
+    for loc, ratings in location_ratings.items():
+        avg = sum(ratings) / len(ratings)
+        averages.append((loc, avg))
 
-    avgs.sort(key=lambda x: x[1], reverse=True)
-    top10 = avgs[:10]
+    averages.sort(key=lambda x: x[1], reverse=True)
+    top10 = averages[:10]
 
-    if not top10:
-        print("No data found for that park.")
-        return
+    locations = [x[0] for x in top10]
+    avgs = [x[1] for x in top10]
 
-    labels = [x[0] for x in top10]
-    values = [x[1] for x in top10]
-
-    plt.figure()
-    plt.bar(labels, values)
+    plt.bar(locations, avgs)
     plt.xticks(rotation=45, ha="right")
-    plt.title(f"Top 10 Locations by Avg Rating — {park_name}")
+    plt.title(f"Top 10 Locations by Average Rating – {park}")
+    plt.xlabel("Location")
     plt.ylabel("Average Rating")
     plt.tight_layout()
     plt.show()
 
 
-def bar_avg_rating_by_month(data, cols, park_name):
-    park_col = cols["park"]
-    rating_col = cols["rating"]
-    date_col = cols["date"]
-
-    want_park = park_name.strip().lower()
-
-    totals = {m: 0.0 for m in range(1, 13)}
-    counts = {m: 0 for m in range(1, 13)}
+def bar_avg_rating_by_month(data, cols, park):
+    month_ratings = defaultdict(list)
 
     for row in data:
-        if row[park_col].strip().lower() != want_park:
+        if row[cols["Branch"]].strip() != park:
             continue
 
-        ym = row[date_col].strip()  # "YYYY-MM"
-        if len(ym) < 7 or ym[4] != "-":
+        ym = row[cols["Year_Month"]].strip()
+
+        try:
+            month = int(ym.split("-")[1])  # safe parsing
+            rating = int(row[cols["Rating"]])
+        except (IndexError, ValueError):
             continue
 
-        month = int(ym[5:7])
-        rating = float(row[rating_col])
+        month_ratings[month].append(rating)
 
-        if 1 <= month <= 12:
-            totals[month] += rating
-            counts[month] += 1
+    months = []
+    avgs = []
 
-    months = list(range(1, 13))
-    avg_by_month = []
-    for m in months:
-        if counts[m] == 0:
-            avg_by_month.append(0.0)
-        else:
-            avg_by_month.append(totals[m] / counts[m])
+    for m in range(1, 13):
+        if m in month_ratings:
+            avg = sum(month_ratings[m]) / len(month_ratings[m])
+            months.append(m)
+            avgs.append(avg)
 
-    month_labels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
-
-    plt.figure()
-    plt.bar(month_labels, avg_by_month)
-    plt.title(f"Average Rating by Month — {park_name}")
+    plt.bar(months, avgs)
+    plt.xticks(
+        range(1, 13),
+        ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    )
+    plt.title(f"Average Rating by Month – {park}")
+    plt.xlabel("Month")
     plt.ylabel("Average Rating")
-    plt.tight_layout()
     plt.show()

@@ -72,6 +72,18 @@ def handle_view_data(data, cols):
             count = process.count_by_park_and_location(data, cols, park, location)
             print(f"\nNumber of reviews for {park} from {location}: {count}")
 
+        elif sub == "C":
+            parks = process.list_parks(data, cols)
+            park = tui.ask_park(parks)
+            year = tui.ask_year()
+
+            avg = process.average_rating_by_park_and_year(data, cols, park, year)
+
+            if avg is None:
+                print(f"\nNo reviews for {park} from {year}.")
+            else:
+                print(f"\nAverage rating for {park} in {year}: {avg:.2f}")
+
         elif sub == "X":
             break
 

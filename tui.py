@@ -32,3 +32,11 @@ def visual_menu():
     print("[A] Pie Chart: Reviews per Park")
     print("[x] Return to Main Menu")
     return input("Select an option: ").strip().upper()
+
+def visual_menu():
+    print("\nVisualise Data Menu")
+    print("[A] Pie Chart: Reviews per Park")
+    print("[B] Bar Chart: Top 10 Locations by Average Rating (Park)")
+    print("[C] Bar Chart: Average Rating by Month (Park)")
+    print("[X] Return to Main Menu")
+    return input("Select an option: ").strip().upper()

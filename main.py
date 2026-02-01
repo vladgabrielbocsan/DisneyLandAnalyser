@@ -101,8 +101,17 @@ def handle_visualise_data(data, cols):
         sub = tui.visual_menu()
 
         if sub == "A":
-            # C.10 Pie Chart: Reviews per Park
             visual.pie_reviews_per_park(data, cols)
+
+        elif sub == "B":
+            parks = process.list_parks(data, cols)
+            park = tui.ask_park(parks)
+            visual.bar_top10_locations_by_avg_rating(data, cols, park)
+
+        elif sub == "C":
+            parks = process.list_parks(data, cols)
+            park = tui.ask_park(parks)
+            visual.bar_avg_rating_by_month(data, cols, park)
 
         elif sub == "X":
             break

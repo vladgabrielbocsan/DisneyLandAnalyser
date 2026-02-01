@@ -1,5 +1,6 @@
 import tui
 import process
+import visual
 
 
 def main():
@@ -30,12 +31,15 @@ def main():
         if choice == "A":
             handle_view_data(data, cols)
 
+        elif choice == "B":
+            handle_visualise_data(data, cols)
+
         elif choice == "X":
             print("Goodbye!")
             break
 
         else:
-            print("Option not implemented yet")
+            print("Invalid option")
 
 
 def handle_view_data(data, cols):
@@ -73,6 +77,7 @@ def handle_view_data(data, cols):
             print(f"\nNumber of reviews for {park} from {location}: {count}")
 
         elif sub == "C":
+            # B.9 Average Rating by Park and Year
             parks = process.list_parks(data, cols)
             park = tui.ask_park(parks)
             year = tui.ask_year()
@@ -80,9 +85,24 @@ def handle_view_data(data, cols):
             avg = process.average_rating_by_park_and_year(data, cols, park, year)
 
             if avg is None:
-                print(f"\nNo reviews for {park} from {year}.")
+                print(f"\nNo reviews found for {park} in {year}")
             else:
                 print(f"\nAverage rating for {park} in {year}: {avg:.2f}")
+
+        elif sub == "X":
+            break
+
+        else:
+            print("Invalid option")
+
+
+def handle_visualise_data(data, cols):
+    while True:
+        sub = tui.visual_menu()
+
+        if sub == "A":
+            # C.10 Pie Chart: Reviews per Park
+            visual.pie_reviews_per_park(data, cols)
 
         elif sub == "X":
             break

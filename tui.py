@@ -26,3 +26,9 @@ def ask_location():
 
 def ask_year():
     return input("Type a year (e.g.,2019): ").strip()
+
+def visual_menu():
+    print("\nVisualise Data Menu")
+    print("[A] Pie Chart: Reviews per Park")
+    print("[x] Return to Main Menu")
+    return input("Select an option: ").strip().upper()

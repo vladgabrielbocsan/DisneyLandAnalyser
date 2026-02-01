@@ -62,7 +62,8 @@ def bar_avg_rating_by_month(data, cols, park):
         ym = row[cols["Year_Month"]].strip()
 
         try:
-            month = int(ym.split("-")[1])  # safe parsing
+            # expected format "YYYY-MM"
+            month = int(ym.split("-")[1])
             rating = int(row[cols["Rating"]])
         except (IndexError, ValueError):
             continue
@@ -81,7 +82,7 @@ def bar_avg_rating_by_month(data, cols, park):
     plt.bar(months, avgs)
     plt.xticks(
         range(1, 13),
-        ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+        ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     )
     plt.title(f"Average Rating by Month – {park}")
     plt.xlabel("Month")

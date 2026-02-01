@@ -12,7 +12,7 @@ def main():
         data, cols = process.load_reviews("Disneyland_reviews.csv")
         print(f"{len(data)} reviews loaded.")
     except FileNotFoundError:
-        print("CSV file not found.")
+        print("CSV file not found. Make sure Disneyland_reviews.csv is in the same folder.")
         return
 
     while True:
@@ -39,24 +39,28 @@ def handle_view_data(data, cols):
         if sub == "A":
             park = tui.ask_park(process.get_parks(data, cols))
             process.view_reviews_by_park(data, cols, park)
+            input("\nPress Enter to return to the View Data menu...")
 
         elif sub == "B":
             park = tui.ask_park(process.get_parks(data, cols))
-            location = input("Enter reviewer location: ").strip()
+            location = input("Enter reviewer location (e.g. United Kingdom): ").strip()
             count = process.count_reviews_by_park_location(data, cols, park, location)
-            print(f"Number of reviews: {count}")
+            print(f"\nNumber of reviews for {park} from {location}: {count}")
+            input("\nPress Enter to return to the View Data menu...")
 
         elif sub == "C":
             park = tui.ask_park(process.get_parks(data, cols))
             year = input("Enter year (e.g. 2019): ").strip()
             avg = process.average_rating_by_park_year(data, cols, park, year)
             if avg is None:
-                print("No data found.")
+                print("\nNo data found for that park/year.")
             else:
-                print(f"Average rating: {avg:.2f}")
+                print(f"\nAverage rating for {park} in {year}: {avg:.2f}")
+            input("\nPress Enter to return to the View Data menu...")
 
         elif sub == "D":
             process.average_score_per_park_by_location(data, cols)
+            input("\nPress Enter to return to the View Data menu...")
 
         elif sub == "X":
             break

@@ -26,6 +26,7 @@ def view_reviews_by_park(data, cols, park):
     found = False
     for row in data:
         if row[cols["Branch"]].strip() == park:
+            # Print the whole row (you can format this nicer if you want)
             print(row)
             found = True
     if not found:
@@ -66,6 +67,7 @@ def average_score_per_park_by_location(data, cols):
     for row in data:
         park = row[cols["Branch"]].strip()
         loc = row[cols["Reviewer_Location"]].strip()
+
         try:
             rating = int(row[cols["Rating"]])
         except ValueError:
@@ -73,8 +75,11 @@ def average_score_per_park_by_location(data, cols):
 
         store[park][loc].append(rating)
 
-    for park, locs in store.items():
+    for park in sorted(store):
         print(f"\nPark: {park}")
-        for loc, ratings in locs.items():
+        locs = store[park]
+
+        for loc in sorted(locs):
+            ratings = locs[loc]
             avg = sum(ratings) / len(ratings)
             print(f"  {loc}: {avg:.2f} (n={len(ratings)})")
